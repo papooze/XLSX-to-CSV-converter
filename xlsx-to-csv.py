@@ -56,8 +56,8 @@ def new_csv(df):
     Inputs: 
     '''
 
-read_data()
-rename_cols()
-
+df = read_data()
+df = rename_cols(df, detailtype)
+new_csv(df)
     
         
