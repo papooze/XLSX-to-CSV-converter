@@ -49,7 +49,7 @@ def merge_sheets(data):
     if len(tab_names) > 1:
         for tab in tab_names:
             df = data.parse(sheetname=tab, skiprows=hrow) #parses data sheet and adds it to a list for concatenation
-            dataframes.append(df)
+            dflist.append(df)
         df = pd.concat(dflist)
     else: 
         df = data.parse(skiprows=hrow)
@@ -57,7 +57,7 @@ def merge_sheets(data):
     print(df.info())
     return df
 
-def extract_cols(df, detailtype):
+def extract_cols(df):
     '''
     Inputs: 
     df: Pandas dataframe
@@ -71,14 +71,28 @@ def extract_cols(df, detailtype):
         if grabbed_col == "break":
             break
         else:
-            grabbed_cols.append(grabbed_col)
+            grabbed_cols[grabbed_col]
     new_df = pd.dataframe
     for col in grabbed_cols:
         new_df[col] = df[col]
     return new_df
 
+
+def extract_policy_year(df):
+    '''Input:
+    df: Formatted new dataframe extracted from old spreadsheet.
+    This function reads the date of loss, and uses the effective date to generate the policy year for the loss run.'''
+
+    df['Loss Date'] = pd.to_datetime(df['Loss Date'])
+    drange = input("What's the policy year day and month? (mm/dd):  ")
+    df['Before or After'] = 
+    if input("Is there a column for Policy Year on the dataset? Y or N:  ") == "N":
+        pd.to_datetime(drange)
+        df['Policy Date Range'] = (drange+'/2000') #placeholder date
+
 df = read_data()
-df = mergedata(df, detailtype)
-df =  
-    
-        
+df = merge_sheets(df, detailtype)
+df = extract_cols
+print(df.head(2))
+print("-------------------------------------------------------------------")
+
