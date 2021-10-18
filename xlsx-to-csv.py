@@ -91,8 +91,8 @@ def extract_policy_year(df):
     return df
 
 df = read_data()
-df = merge_sheets(df, detailtype)
-df = extract_cols
+df = merge_sheets(df)
+df = extract_cols(df)
 df = extract_policy_year(df)
 
 print(df.head(2))
