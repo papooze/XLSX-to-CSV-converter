@@ -72,7 +72,7 @@ def extract_cols(df):
             break
         else:
             grabbed_cols.append(grabbed_col)
-    new_df = pd.dataframe
+    new_df = pd.DataFrame()
     for col in grabbed_cols:
         new_df[col] = df[col]
     return new_df
