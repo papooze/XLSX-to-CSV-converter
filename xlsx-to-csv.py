@@ -85,7 +85,7 @@ def extract_policy_year(df):
     loss_date_col_name = str(input("What is the name of the Loss Date column?"))
     df[loss_date_col_name] = pd.to_datetime(df[loss_date_col_name])
     drange = pd.to_datetime(str('2000-'+input("What's the policy year month and day? (mm-dd):  "))) #placeholder year
-    df['Before or After'] = ['Before' if (df[loss_date_col_name].dt.dayofyear < drange.dt.dayofyear) else 'After']
+    df['Before or After'] = ['Before' if (df[loss_date_col_name].dayofyear < drange.dayofyear) else 'After']
     df['Policy Year'] = [df[loss_date_col_name].dt.year if df['Before or After'] == 'After' else df[loss_date_col_name].dt.year-1] #Policy year conditional statement
     df = df.drop('Before or After', 1) #Drop conditional column from dataframe 
     return df
