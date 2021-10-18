@@ -9,8 +9,8 @@ Policy Number, LOB, Policy Effective Date, Effective Year, Claim Number, Loss Da
 Accident Description, Claim Status, Total Reserved, Total Paid, Total Incurred, Recovered,
 Filename, Valuation Date
 """
-print("hello")
 import pandas as pd
+import datetime as date
 
 hrow = int(input("On which row do the headers begin? (Number only)"))-1
 hcol = input("On which column does the data begin? (Letter)").upper()
@@ -84,15 +84,19 @@ def extract_policy_year(df):
     This function reads the date of loss, and uses the effective date to generate the policy year for the loss run.'''
 
     df['Loss Date'] = pd.to_datetime(df['Loss Date'])
-    drange = input("What's the policy year day and month? (mm/dd):  ")
-    df['Before or After'] = 
-    if input("Is there a column for Policy Year on the dataset? Y or N:  ") == "N":
-        pd.to_datetime(drange)
-        df['Policy Date Range'] = (drange+'/2000') #placeholder date
+    drange = pd.to_datetime(str('2000-'+input("What's the policy year month and day? (mm-dd):  "))) #placeholder year
+    df['Before or After'] = ['Before' if (df['Loss Date'].dt.dayofyear < drange.dt.dayofyear) else 'After']
+    df['Policy Year'] = [df['Loss Date'].dt.year if df['Before or After'] == 'After' else df['Loss Date'].dt.year-1] #Policy year conditional statement
+    df = df.drop('Before or After', 1) #Drop conditional column from dataframe 
+    return df
 
 df = read_data()
 df = merge_sheets(df, detailtype)
 df = extract_cols
+df = extract_policy_year(df)
+
 print(df.head(2))
 print("-------------------------------------------------------------------")
 
+if input("Is there a column for Policy Year on the dataset? Y or N:  ") == "N":
+    df = extract_policy_year(df)
