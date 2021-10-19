@@ -87,7 +87,7 @@ def extract_policy_year(df):
     df[loss_date_col_name] = pd.to_datetime(df[loss_date_col_name])
     df['day_of_year_of_loss'] = df[loss_date_col_name].dt.dayofyear
     df['day_of_year_of_policy']= (pd.to_datetime(arg=str(input("What's the policy year month and day? (mm-dd):  ")+'-2000'), infer_datetime_format=True)).dayofyear#placeholder year
-    df['Policy_Year'] = np.where((df['day_of_year_of_loss'] >= df['day_of_year_of_policy']), (df[loss_date_col_name].year),  df[loss_date_col_name].year-1)
+    df['Policy_Year'] = np.where((df['day_of_year_of_loss'] >= df['day_of_year_of_policy']), (df[loss_date_col_name].dt.year),  df[loss_date_col_name].dt.year-1)
     print(df.head(2))
     df = df.drop('day_of_year_of_loss', 1) #Drop day of year columns
     df = df.drop('day_of_year_of_policy' , 1)
