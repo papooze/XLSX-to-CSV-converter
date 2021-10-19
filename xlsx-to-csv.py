@@ -84,19 +84,17 @@ def extract_policy_year(df):
     This function reads the date of loss, and uses the effective date to generate the policy year for the loss run.'''
     loss_date_col_name = str(input("What is the name of the Loss Date column?"))
     df[loss_date_col_name] = pd.to_datetime(df[loss_date_col_name])
-    drange = pd.to_datetime(str('2000-'+input("What's the policy year month and day? (mm-dd):  "))) #placeholder year
-    df['Before or After'] = ['Before' if (df[loss_date_col_name].dayofyear < drange.dayofyear) else 'After']
-    df['Policy Year'] = [df[loss_date_col_name].dt.year if df['Before or After'] == 'After' else df[loss_date_col_name].dt.year-1] #Policy year conditional statement
-    df = df.drop('Before or After', 1) #Drop conditional column from dataframe 
+    df['day_of_year_of_loss'] = df[loss_date_col_name].dt.dayofyear
+    df['day_of_year_of_policy']= (pd.to_datetime(str(input("What's the policy year month and day? (mm-dd):  "+'-2000')))).dt.dayofyear #placeholder year
+    df['Policy Year'] = [df[loss_date_col_name].dt.year if df['day_of_year_of_loss'] > df['day_of_year_of_policy'] else df[loss_date_col_name].dt.year-1] #Policy year conditional statement
+    df = df.drop('day_of_year_of_loss', 1) #Drop day of year columns
+    df = df.drop('day_of_year_of_policy' , 1)
     return df
 
 df = read_data()
 df = merge_sheets(df)
 df = extract_cols(df)
-df = extract_policy_year(df)
-
+if input("Do you need to extract policy year? (Y/N): ") == "Y":
+    df = extract_policy_year(df)
 print(df.head(2))
 print("-------------------------------------------------------------------")
-
-if input("Is there a column for Policy Year on the dataset? Y or N:  ") == "N":
-    df = extract_policy_year(df)
