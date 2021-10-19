@@ -54,7 +54,7 @@ def merge_sheets(data):
         df = pd.concat(dflist)
     else: 
         df = data.parse(skiprows=hrow)
-    df = df.rename(columns=lambda x: x.split(" "))
+    df = df.rename(columns=lambda x: x.strip())
     print("------------------------------------------------------------------")
     print(df.info())
     return df
