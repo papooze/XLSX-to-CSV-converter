@@ -99,31 +99,31 @@ def merge_financials(df):
     grabbed_cols = []
     if (input("Do we need to merge for total incurred? (Y/N): ")) == "Y":
         while True: #column population loop
-        grabbed_col = input("Name exact column you would like to grab for TOTAL INCURRED (type 'break' to exit): ")
-        if grabbed_col == "break":
-            break
-        else:
-            grabbed_cols.append(grabbed_col)
+            grabbed_col = input("Name exact column you would like to grab for TOTAL INCURRED (type 'break' to exit): ")
+            if grabbed_col == "break":
+                break
+            else:
+                grabbed_cols.append(grabbed_col)
         df['Total Incurred'] = df[grabbed_cols].sum(axis=1)
 
     if (input("Do we need to merge for total paid? (Y/N): ")) == "Y":
-        grabbed_cols =[]
+        grabbed_cols = []
         while True: #column population loop
-        grabbed_col = input("Name exact column you would like to grab for TOTAL PAID (type 'break' to exit): ")
-        if grabbed_col == "break":
-            break
-        else:
-            grabbed_cols.append(grabbed_col)
+            grabbed_col = input("Name exact column you would like to grab for TOTAL PAID (type 'break' to exit): ")
+            if grabbed_col == "break":
+                break
+            else:
+                grabbed_cols.append(grabbed_col)
         df['Total Paid'] = df[grabbed_cols].sum(axis=1)
 
     if (input("Do we need to merge for total reserve? (Y/N): ")) == "Y":
         grabbed_cols = []
         while True: #column population loop
-        grabbed_col = input("Name exact column you would like to grab for TOTAL RESERVE (type 'break' to exit): ")
-        if grabbed_col == "break":
-            break
-        else:
-            grabbed_cols.append(grabbed_col)
+            grabbed_col = input("Name exact column you would like to grab for TOTAL RESERVE (type 'break' to exit): ")
+            if grabbed_col == "break":
+                break
+            else:
+                grabbed_cols.append(grabbed_col)
         df['Total Reserve'] = df[grabbed_cols].sum(axis=1)
     return df
 
