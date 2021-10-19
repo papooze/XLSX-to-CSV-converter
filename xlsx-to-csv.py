@@ -88,9 +88,43 @@ def extract_policy_year(df):
     df['day_of_year_of_loss'] = df[loss_date_col_name].dt.dayofyear
     df['day_of_year_of_policy']= (pd.to_datetime(arg=str(input("What's the policy year month and day? (mm-dd):  ")+'-2000'), infer_datetime_format=True)).dayofyear#placeholder year
     df['Policy_Year'] = np.where((df['day_of_year_of_loss'] >= df['day_of_year_of_policy']), (df[loss_date_col_name].dt.year),  df[loss_date_col_name].dt.year-1)
-    print(df.head(2))
     df = df.drop('day_of_year_of_loss', 1) #Drop day of year columns
     df = df.drop('day_of_year_of_policy' , 1)
+    return df
+
+def merge_financials(df):
+    '''Input:
+    df: Dataframe with condition that it NEEDS to have its financial amounts merged (i.e. needs total paid, total incurred, total reserve, etc.)
+    This function takes these extra financial columns and merges them for ease of transition to summary.'''
+    grabbed_cols = []
+    if (input("Do we need to merge for total incurred? (Y/N): ")) == "Y":
+                while True: #column population loop
+        grabbed_col = input("Name exact column you would like to grab for TOTAL INCURRED (type 'break' to exit): ")
+        if grabbed_col == "break":
+            break
+        else:
+            grabbed_cols.append(grabbed_col)
+        df['Total Incurred'] = df[grabbed_cols].sum(axis=1)
+
+    if (input("Do we need to merge for total paid? (Y/N): ")) == "Y":
+        grabbed_cols =[]
+        while True: #column population loop
+        grabbed_col = input("Name exact column you would like to grab for TOTAL PAID (type 'break' to exit): ")
+        if grabbed_col == "break":
+            break
+        else:
+            grabbed_cols.append(grabbed_col)
+        df['Total Paid'] = df[grabbed_cols].sum(axis=1)
+
+    if (input("Do we need to merge for total reserve? (Y/N): ")) == "Y":
+        grabbed_cols = []
+                while True: #column population loop
+        grabbed_col = input("Name exact column you would like to grab for TOTAL RESERVE (type 'break' to exit): ")
+        if grabbed_col == "break":
+            break
+        else:
+            grabbed_cols.append(grabbed_col)
+        df['Total Reserve'] = df[grabbed_cols].sum(axis=1)
     return df
 
 df = read_data()
@@ -98,5 +132,8 @@ df = merge_sheets(df)
 df = extract_cols(df)
 if input("Do you need to extract policy year? (Y/N): ") == "Y":
     df = extract_policy_year(df)
-print(df.head(2))
+print(df.head(5))
 print("-------------------------------------------------------------------")
+if input("Do we have all combined necessary financial info from Loss Run? (Incurred, Paid, Reserve, Recovery): ") == "Y":
+    df = merge_financials(df)
+print(df.head(5))
