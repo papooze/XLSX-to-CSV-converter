@@ -10,6 +10,7 @@ Accident Description, Claim Status, Total Reserved, Total Paid, Total Incurred, 
 Filename, Valuation Date
 """
 import pandas as pd
+import numpy as np
 import datetime as date
 
 hrow = int(input("On which row do the headers begin? (Number only)"))-1
@@ -86,8 +87,8 @@ def extract_policy_year(df):
     df[loss_date_col_name] = pd.to_datetime(df[loss_date_col_name])
     df['day_of_year_of_loss'] = df[loss_date_col_name].dt.dayofyear
     df['day_of_year_of_policy']= (pd.to_datetime(arg=str(input("What's the policy year month and day? (mm-dd):  ")+'-2000'), infer_datetime_format=True)).dayofyear#placeholder year
+    df['Policy_Year'] = np.where((df['day_of_year_of_loss'] >= df['day_of_year_of_policy']), (df[loss_date_col_name].year),  df[loss_date_col_name].year-1)
     print(df.head(2))
-    df['Policy Year'] = [df[loss_date_col_name].dt.year if df['day_of_year_of_loss'] > df['day_of_year_of_policy'] else df[loss_date_col_name].dt.year-1] #Policy year conditional statement
     df = df.drop('day_of_year_of_loss', 1) #Drop day of year columns
     df = df.drop('day_of_year_of_policy' , 1)
     return df
