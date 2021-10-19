@@ -98,7 +98,7 @@ def merge_financials(df):
     This function takes these extra financial columns and merges them for ease of transition to summary.'''
     grabbed_cols = []
     if (input("Do we need to merge for total incurred? (Y/N): ")) == "Y":
-                while True: #column population loop
+        while True: #column population loop
         grabbed_col = input("Name exact column you would like to grab for TOTAL INCURRED (type 'break' to exit): ")
         if grabbed_col == "break":
             break
@@ -118,7 +118,7 @@ def merge_financials(df):
 
     if (input("Do we need to merge for total reserve? (Y/N): ")) == "Y":
         grabbed_cols = []
-                while True: #column population loop
+        while True: #column population loop
         grabbed_col = input("Name exact column you would like to grab for TOTAL RESERVE (type 'break' to exit): ")
         if grabbed_col == "break":
             break
