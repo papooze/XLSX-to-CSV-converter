@@ -5,26 +5,21 @@ Created on Wed Sep  8 15:29:35 2021
 
 
 Column names: 
-Policy Number, LOB, Policy Effective Date, Effective Year, Claim Number, Loss Date, Report Date, 
-Accident Description, Claim Status, Total Reserved, Total Paid, Total Incurred, Recovered,
+Policy Number, LOB, Entity, Policy Effective Date, Effective Year, Claim Number, Loss Date, Report Date, 
+Accident Description, Claim Status, Medical OS Reserve, Medical Paid, Indemnity OS Reserve, Indemnity Paid,
+Expense Reserve, Expense Paid, Total Reserve, Total Paid, Total Incurred, Recovery, Total Incurred Net of Recovery,
+Total Paid Net of Recovery, Total Incurred Limited/XS, Filename, Valuation Date 
 Filename, Valuation Date
 """
+
 import pandas as pd
 import numpy as np
 import datetime as date
 
-hrow = int(input("On which row do the headers begin? (Number only)"))-1
-hcol = input("On which column does the data begin? (Letter)").upper()
+hrow = int(input("On which row do the headers begin? (Number only): "))-1
+hcol = input("On which column does the data begin? (Letter): ").upper()
 
 
-simple = ['Policy Number', 'LOB', 'Policy Effective Date', 'Effective Year', 'Claim Number', 'Loss Date', 'Report Date', 
-'Accident Description', 'Claim Status', 'Total Reserved', 'Total Paid', 'Total Incurred', 'Recovered',
-'Filename', 'Valuation Date']
-
-expanded = ['Policy Number', 'LOB', 'Policy Effective Date', 'Effective Year', 'Claim Number', 'Loss Date', 'Report Date', 
-'Accident Description','Accident State', 'Deductible/SIR', 'Net Paid', 'Deductible Paid', 'Paid Expense', 'Paid Indemnity', 
-'Paid Medical', 'Deductible Reverse', 'Claim Reserve', 'Gross Incurred', 'Gross Paid', 'Net Incurred',
-'Gross Incurred Limited to XX', 'Gross Incurred as XX', 'Loss Run', 'Valuation Date', 'Location']
 
 def read_data():
     '''Returns a dataframe from a converted .xlsx->CSV as a pandas dataframe.'''
@@ -36,7 +31,6 @@ def read_data():
         print("Warning: This Excel file has multiple sheets. There are "+len(data.sheet_names)+" in the Excel file.")
     return data
 
-detailtype = input("Simple or Expanded loss data? (TYPE 'S' OR 'E'. ").lower()
 
 def merge_sheets(data):
     '''
@@ -93,6 +87,24 @@ def extract_policy_year(df):
     df = df.drop('day_of_year_of_policy' , 1)
     return df
 
+def rename_lobs(df):
+    '''Input:
+    df: Formatted dataframe containing loss run data.
+    This function takes a dataframe, and transforms the LOB values into a more standardized version.'''
+    lob_dict = {}
+    print("-------------------------------------------------------------------")
+    old_lob_col = input("What is the name of the column with the listed LOB? ")
+    old_lob = df[old_lob_col].unique()
+    print("These are the unique LOBs found in this column:")
+    print(old_lob)
+    for lob in old_lob:
+        lob_dict[old_lob] = input("What should the LOB be for this value?: ")
+    df['LOB'] = df[old_lob_col].map(lob_dict)
+    df = df.drop(old_lob_col, 1)
+    return df
+
+
+    
 def merge_financials(df):
     '''Input:
     df: Dataframe with condition that it NEEDS to have its financial amounts merged (i.e. needs total paid, total incurred, total reserve, etc.)
@@ -106,7 +118,8 @@ def merge_financials(df):
             else:
                 grabbed_cols.append(grabbed_col)
         df['Total Incurred'] = df[grabbed_cols].sum(axis=1)
-
+        for col in grabbed_cols:
+            df.drop(col, 1)
     if (input("Do we need to merge for total paid? (Y/N): ")) == "Y":
         grabbed_cols = []
         while True: #column population loop
@@ -116,6 +129,8 @@ def merge_financials(df):
             else:
                 grabbed_cols.append(grabbed_col)
         df['Total Paid'] = df[grabbed_cols].sum(axis=1)
+        for col in grabbed_cols:
+            df.drop(col, 1)
 
     if (input("Do we need to merge for total reserve? (Y/N): ")) == "Y":
         grabbed_cols = []
@@ -126,15 +141,23 @@ def merge_financials(df):
             else:
                 grabbed_cols.append(grabbed_col)
         df['Total Reserve'] = df[grabbed_cols].sum(axis=1)
+        for col in grabbed_cols:
+            df.drop(col, 1)
     return df
 
-df = read_data()
-df = merge_sheets(df)
-df = extract_cols(df)
-if input("Do you need to extract policy year? (Y/N): ") == "Y":
-    df = extract_policy_year(df)
-print(df.head(5))
-print("-------------------------------------------------------------------")
-if input("Do we have all combined necessary financial info from Loss Run? (Incurred, Paid, Reserve, Recovery): ") == "Y":
-    df = merge_financials(df)
-print(df.head(5))
+
+converted = {} #Storage for multiple dataframes
+for i in range(int(input("How many xlsx files are there that need to be processed?: "))):
+    df = read_data()
+    df = merge_sheets(df)
+    df = extract_cols(df)
+    if input("Do you need to extract policy year? (Y/N): ") == "Y":
+        df = extract_policy_year(df)
+    print(df.head(5))
+    print("-------------------------------------------------------------------")
+    if input("Do we have all combined necessary financial info from Loss Run? (Incurred, Paid, Reserve, Recovery): ") == "N":
+        df = merge_financials(df)
+    if input("Do we have the LOBs formatted correctly?: ") == "N":
+        df = rename_lobs(df)
+    print(df.head(5))
+    converted[i] = df
