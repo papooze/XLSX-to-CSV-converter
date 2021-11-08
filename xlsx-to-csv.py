@@ -146,7 +146,8 @@ def merge_financials(df):
     return df
 
 
-converted = {} #Storage for multiple dataframes
+dfs = []
+sheets = []
 for i in range(int(input("How many xlsx files are there that need to be processed?: "))):
     df = read_data()
     df = merge_sheets(df)
@@ -160,4 +161,11 @@ for i in range(int(input("How many xlsx files are there that need to be processe
     if input("Do we have the LOBs formatted correctly?: ") == "N":
         df = rename_lobs(df)
     print(df.head(5))
-    converted[i] = df
+    dfs.append(df)
+    sheets.append(input("Name of sheet: ")
+xlsx_name = input("Name of excel file: ")
+writer = pd.ExcelWriter(xlsx_name,engine='xlsxwriter')
+for dataframe, sheet in zip(dfs, sheets):
+    dataframe.to_excel(writer, sheet_name=sheet, startrow=0, startcol=0)
+
+writer.save()
